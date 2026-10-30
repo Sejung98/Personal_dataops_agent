@@ -31,21 +31,15 @@ www.encodeproject.org and its S3 redirect target, zenodo.org):
 | Part | State |
 |---|---|
 | Plain-LLM answers (arm B) | Collected: [`baseline_plain_llm.md`](baseline_plain_llm.md) |
-| Team run (arm A) | **Pending.** The cloud sandbox used to build this repository blocks the data hosts, so no API call or download could succeed there: [`results/2026-10-30_cloud-sandbox_blocked/`](results/2026-10-30_cloud-sandbox_blocked/) records that attempt (every request returned a proxy 403). |
-| Comparison report | Written after arm A runs on a machine with access to the hosts above. |
-
-Early observations from arm B alone (to be checked against live results):
-- For P2–P5 it gave no concrete file names, sizes or checksums; its ENCODE commands contain a placeholder
-  (`ENCFFxxxxxx`) that has to be filled in by hand.
-- For P1 it answered "0 open-access WGS BAMs" from policy knowledge and estimated the controlled total only roughly.
-- For P4 it suggested SRR390278 might be a typo for SRR390728. SRR390278 is in nf-core/fetchngs's own test ID
-  list, so that suggestion is probably wrong; the live run will confirm.
+| Team run (arm A) | Done on cpm-server1 (2026-10-30): [`results/2026-10-30_cpm-server1/`](results/2026-10-30_cpm-server1/). The earlier sandbox attempt (all proxy 403) is kept in [`results/2026-10-30_cloud-sandbox_blocked/`](results/2026-10-30_cloud-sandbox_blocked/). |
+| Comparison report | [`REPORT.md`](REPORT.md) (Korean) |
 
 ## Folder layout
 
 ```
 benchmarks/
 ├── README.md                    # protocol and status (this file)
+├── REPORT.md                    # comparison report
 ├── live_comparison.py           # arm A runner (team code path, local runner, real downloads)
 ├── baseline_plain_llm.md        # arm B answers, verbatim
 └── results/
