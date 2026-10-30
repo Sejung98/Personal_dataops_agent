@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "genomics-dataops-team"
+version = "0.1.0"
+description = "Claude Code + MCP 기반 공공 유전체 데이터(GDC/SRA/EGA) DataOps 에이전트 팀"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "mcp>=1.20,<3",
+    "httpx>=0.27,<1",
+    "pyyaml>=6",
+    "jinja2>=3.1",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8", "respx>=0.21"]
+
+[project.scripts]
+dataops-mcp = "dataops_mcp.server:main"
+
+[tool.setuptools]
+packages = ["dataops_mcp"]
+
+[tool.setuptools.package-data]
+dataops_mcp = ["templates/*.j2"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-m 'not live'"
+markers = [
+    "live: 실제 GDC/ENA/NCBI/EGA API를 호출하는 스모크 테스트 (pytest -m live)",
+]

@@ -1,0 +1,22 @@
+{% extends "base.sh.j2" %}
+{% block body %}
+{% if container in ('singularity', 'apptainer') %}
+export NXF_SINGULARITY_CACHEDIR={{ container_cache | q }}
+export NXF_APPTAINER_CACHEDIR={{ container_cache | q }}
+{% endif %}
+{% if offline %}
+# 계산 노드에 인터넷이 없으므로 파이프라인/컨테이너는 prefetch 스크립트로 미리 받아 둬야 한다.
+export NXF_OFFLINE=true
+{% endif %}
+export NXF_ANSI_LOG=false
+mkdir -p {{ outdir | q }} {{ work_dir | q }} {{ launch_dir | q }}
+# -resume 캐시(.nextflow/)가 유지되도록 실행 디렉토리를 고정한다.
+cd {{ launch_dir | q }}
+{{ nextflow | q }} run nf-core/{{ pipeline }} \
+  -r {{ version }} \
+  -profile {{ profile }} \
+  -c {{ site_config | q }} \
+  -params-file {{ params_file | q }} \
+  -work-dir {{ work_dir | q }} \
+  -resume
+{% endblock %}

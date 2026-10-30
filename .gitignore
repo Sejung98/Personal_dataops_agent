@@ -1,0 +1,30 @@
+# 로컬 설정과 크리덴셜
+config.yaml
+*.token
+*token*.txt
+*credential*.json
+credentials.json
+.gdc/
+.ega/
+
+# 상태·데이터·작업 디렉토리
+state/
+data/
+work/
+singularity_cache/
+*.sqlite
+*.sqlite-journal
+.nextflow/
+.nextflow.log*
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+build/
+dist/
+
+# Claude Code 로컬 설정
+.claude/settings.local.json
