@@ -13,6 +13,16 @@
       "mcp__dataops__verify_download",
       "mcp__dataops__build_samplesheet",
       "mcp__dataops__prepare_pipeline",
+      "mcp__dataops__list_databases",
+      "mcp__dataops__url_inspect",
+      "mcp__dataops__geo_files",
+      "mcp__dataops__arrayexpress_files",
+      "mcp__dataops__encode_search",
+      "mcp__dataops__encode_files",
+      "mcp__dataops__cellxgene_search",
+      "mcp__dataops__cbioportal_search",
+      "mcp__dataops__pride_files",
+      "mcp__dataops__zenodo_files",
       "mcp__dataops__preflight_check",
       "mcp__dataops__record_review",
       "mcp__dataops__job_status",
@@ -32,8 +42,11 @@
       "Read(~/.gdc/**)",
       "Read(~/.ega/**)",
       "Read(**/*token*.txt)",
-      "Read(**/*credential*.json)"
+      "Read(**/*credential*.json)",
+      "Read(**/*.ngc)"
     ]
   },
-  "enabledMcpjsonServers": ["dataops"]
+  "enabledMcpjsonServers": [
+    "dataops"
+  ]
 }

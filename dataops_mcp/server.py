@@ -16,7 +16,7 @@ except ImportError:  # mcp 1.x
     from mcp.server.fastmcp import FastMCP as _Server
 from mcp.types import ToolAnnotations
 
-from . import ega, gdc, processing, review, scheduler, sra, transfer
+from . import catalog, ega, gdc, processing, review, scheduler, sra, transfer, urlfiles
 from .config import load_config
 from .http import make_client
 from .security import check_secret_file
@@ -95,6 +95,13 @@ def check_environment() -> dict:
         }
 
     return _run(go)
+
+
+@tool(READ_ONLY)
+def list_databases() -> dict:
+    """지원 데이터베이스 카탈로그(도메인, 데이터 종류, 접근 수준, 담당 도구·subagent, 다운로드 방식)와
+    지원하지 않는 자원 및 이유. 수치는 없다(수치는 각 discovery 도구로만)."""
+    return _run(catalog.list_databases)
 
 
 # ---------------------------------------------------------------- discovery: GDC
@@ -208,6 +215,19 @@ def ega_search(accession: str, include_files: bool = True) -> dict:
 
 
 @tool(READ_ONLY)
+def url_inspect(urls: list[str], subdir: str = "") -> dict:
+    """카탈로그에 없는 공개 파일(예: Ensembl/GENCODE 레퍼런스, gnomAD, 1000 Genomes)의 HTTPS URL을 HEAD로
+    확인(존재·크기)하고 다운로드 manifest로 저장한다."""
+
+    def go() -> dict:
+        cfg, db = _ctx()
+        with make_client(cfg) as client:
+            return urlfiles.inspect_urls(cfg, db, client, urls, subdir=subdir)
+
+    return _run(go)
+
+
+@tool(READ_ONLY)
 def get_query(query_id: str) -> dict:
     """저장된 discovery 결과(요약, 파라미터, 근거 API 호출, manifest 경로)를 query_id로 조회."""
 
@@ -240,16 +260,19 @@ def prepare_download(
     acknowledge_controlled_access: bool = False,
     nf_core_pipeline: Optional[str] = "rnaseq",
     download_method: Optional[str] = None,
+    use_dbgap: bool = False,
 ) -> dict:
     """query_id의 다운로드 job 스크립트를 생성한다(실행하지 않음). GDC=gdc-client, SRA/ENA/GEO=nf-core/fetchngs,
     EGA=pyega3. controlled 데이터는 사용자 확인 후 acknowledge_controlled_access=True가 필요하다.
-    nf_core_pipeline/download_method는 fetchngs 옵션(download_method: ftp|sratools|aspera|fastq-dl)."""
+    nf_core_pipeline/download_method는 fetchngs 옵션(download_method: ftp|sratools|aspera|fastq-dl).
+    use_dbgap=True: dbGaP 보호 SRA run을 config.dbgap_key_path(.ngc)로 받는다(controlled, 확인 필요)."""
 
     def go() -> dict:
         cfg, db = _ctx()
         return transfer.prepare_download(cfg, db, query_id, dest=dest,
                                          acknowledge_controlled_access=acknowledge_controlled_access,
-                                         nf_core_pipeline=nf_core_pipeline, download_method=download_method)
+                                         nf_core_pipeline=nf_core_pipeline, download_method=download_method,
+                                         use_dbgap=use_dbgap)
 
     return _run(go)
 

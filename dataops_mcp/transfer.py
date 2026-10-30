@@ -22,6 +22,7 @@ from . import render, scheduler
 from .config import Config
 from .security import check_secret_file, dir_exposure, nearest_existing, redact
 from .state import ACTIVE_STATES, StateDB, now_iso
+from .urlfiles import URL_SOURCES
 from .util import fmt_bytes, has_accession, read_tsv
 
 SUBMITTABLE_KINDS = ("download", "pipeline", "verify")
@@ -105,15 +106,20 @@ def prepare_download(
     acknowledge_controlled_access: bool = False,
     nf_core_pipeline: str | None = "rnaseq",
     download_method: str | None = None,
+    use_dbgap: bool = False,
 ) -> dict[str, Any]:
     query = _load_query(db, query_id)
     source = query["source"]
+    if use_dbgap and source != "sra":
+        raise ValueError("use_dbgap은 SRA query에만 쓸 수 있습니다.")
     if not query.get("manifest_path"):
         raise ValueError(
             "이 query에는 다운로드 목록(manifest)이 없습니다. "
             "GDC는 gdc_search_files, SRA는 sra_search, EGA는 ega_search(include_files=True) 결과를 사용하세요."
         )
     access = query.get("access") or "open"
+    if use_dbgap:
+        access = "controlled"  # dbGaP 보호 run은 DAC 승인 데이터
     dest_path = Path(dest).expanduser().resolve() if dest else default_dest(cfg, query)
     warnings: list[str] = []
     secret_check = None
@@ -196,6 +202,17 @@ def prepare_download(
             params["nf_core_pipeline"] = nf_core_pipeline
         if download_method:
             params["download_method"] = download_method
+        if use_dbgap:
+            ngc = cfg.path("dbgap_key_path")
+            secret_check = check_secret_file(ngc, "dbGaP repository key (.ngc)")
+            if not secret_check["exists"]:
+                raise FileNotFoundError(secret_check["warning"] + " dbGaP에서 받은 .ngc 파일 경로를 config.dbgap_key_path에 적으세요.")
+            if not secret_check["ok"]:
+                warnings.append(secret_check["warning"])
+            # 보호 run은 ENA FTP에 없으므로 SRA Toolkit 경로로 받는다.
+            params["dbgap_key"] = str(ngc)
+            params["download_method"] = "sratools"
+            meta["secret_path"] = str(ngc)
         params_file = run_dir / "params.yaml"
         params_file.write_text(yaml.safe_dump(params, sort_keys=True, allow_unicode=True), encoding="utf-8")
         # 전송 노드/로그인 노드 모드에서는 task도 같은 노드에서 돌아야 인터넷을 쓸 수 있다.
@@ -255,6 +272,22 @@ def prepare_download(
             cfg, db, template="ega_download.sh.j2", kind="download", name=f"ega_{query_id}", group=query_id,
             runner=runner, resources=res, context=context, meta=meta, query_id=query_id, inputs=inputs, umask=umask,
         )
+    elif source in URL_SOURCES:
+        rows = read_tsv(query["manifest_path"])
+        files = [
+            {"url": r["url"], "rel": "/".join(x for x in (r.get("subdir"), r["filename"]) if x),
+             "size": r.get("size", ""), "checksum": r.get("checksum", "")}
+            for r in rows
+        ]
+        no_checksum = sum(1 for f in files if not f["checksum"])
+        if no_checksum:
+            warnings.append(f"{no_checksum}개 파일은 저장소가 체크섬을 제공하지 않아 크기만 확인합니다.")
+        context = {"dest": str(dest_path), "manifest": query["manifest_path"], "files": files}
+        meta.update({"n_files": len(files)})
+        out = render.write_script(
+            cfg, db, template="url_download.sh.j2", kind="download", name=f"{source}_{query_id}", group=query_id,
+            runner=runner, resources=res, context=context, meta=meta, query_id=query_id, inputs=inputs, umask=umask,
+        )
     else:
         raise ValueError(f"알 수 없는 source: {source}")
 
@@ -282,23 +315,27 @@ def prepare_download(
 # ---------------------------------------------------------------------------
 # verify_download
 # ---------------------------------------------------------------------------
-def _md5(path: Path) -> str:
-    h = hashlib.md5()  # noqa: S324 - 무결성 검사용
+def _digest(path: Path, algo: str) -> str:
+    h = hashlib.new(algo)  # 무결성 검사용 (md5/sha1/sha256)
     with open(path, "rb") as fh:
         for chunk in iter(lambda: fh.read(1 << 22), b""):
             h.update(chunk)
     return h.hexdigest()
 
 
+def _cs(value: str | None, algo: str = "md5") -> str | None:
+    return f"{algo}:{value.lower()}" if value else None
+
+
 def _expected_files(cfg: Config, query: dict[str, Any], dest: Path) -> list[dict[str, Any]]:
-    """manifest에서 기대 파일 목록: {label, candidates(경로 후보), size, md5}."""
+    """manifest에서 기대 파일 목록: {label, path, size, checksum('algo:hex'), size_strict}."""
     src = query["source"]
     rows = read_tsv(query["manifest_path"])
     out: list[dict[str, Any]] = []
     if src == "gdc":
         for r in rows:
             out.append({"label": r["filename"], "path": dest / r["id"] / r["filename"],
-                        "size": int(r["size"]) if r.get("size") else None, "md5": r.get("md5") or None,
+                        "size": int(r["size"]) if r.get("size") else None, "checksum": _cs(r.get("md5")),
                         "size_strict": True})
     elif src == "sra":
         all_fastq = list(dest.rglob("*.fastq.gz"))
@@ -322,7 +359,8 @@ def _expected_files(cfg: Config, query: dict[str, Any], dest: Path) -> list[dict
                 suffix = name.split(run, 1)[-1]
                 match = [p for p in mine if p.name.endswith(suffix)] or [p for p in mine if size and p.stat().st_size == size]
                 out.append({"label": name, "path": match[0] if match else dest / "fastq" / name, "size": size,
-                            "md5": md5s[i] if i < len(md5s) and md5s[i] else None, "size_strict": True})
+                            "checksum": _cs(md5s[i]) if i < len(md5s) and md5s[i] else None,
+                            "size_strict": True})
     elif src == "ega":
         by_name: dict[str, Path] = {}
         for p in dest.rglob("*"):
@@ -334,7 +372,12 @@ def _expected_files(cfg: Config, query: dict[str, Any], dest: Path) -> list[dict
             path = by_name.get(plain) or by_name.get(name) or dest / plain
             # EGA 메타데이터 크기는 암호화 파일 기준일 수 있어 경고로만 취급
             out.append({"label": plain, "path": path, "size": int(r["size"]) if r.get("size") else None,
-                        "md5": r.get("checksum") or None, "size_strict": False})
+                        "checksum": _cs(r.get("checksum")), "size_strict": False})
+    elif src in URL_SOURCES:
+        for r in rows:
+            rel = "/".join(x for x in (r.get("subdir"), r["filename"]) if x)
+            out.append({"label": rel, "path": dest / rel, "size": int(r["size"]) if r.get("size") else None,
+                        "checksum": r.get("checksum") or None, "size_strict": True})
     return out
 
 
@@ -357,32 +400,38 @@ def verify_download(
         if e["size"] is not None and p.stat().st_size != e["size"]:
             (size_bad if e["size_strict"] else size_warn).append(
                 {"file": e["label"], "expected": e["size"], "actual": p.stat().st_size})
-    partial = [str(p.relative_to(dest_path)) for p in dest_path.rglob("*.partial")]
+    partial = [str(p.relative_to(dest_path)) for pattern in ("*.partial", "*.part")
+               for p in dest_path.rglob(pattern)]
 
     md5_job = None
     md5_checked = False
     present_bytes = sum(e["path"].stat().st_size for e in present)
     limit = float(cfg.get("md5_inline_limit_gb", 20)) * 1e9
+    with_cs = [e for e in present if e["checksum"]]
     if check_md5:
         if present_bytes <= limit:
-            for e in present:
-                if e["md5"] and _md5(e["path"]) != e["md5"]:
+            for e in with_cs:
+                algo, want = e["checksum"].split(":", 1)
+                if _digest(e["path"], algo) != want:
                     md5_bad.append(e["label"])
             md5_checked = True
         else:
-            md5_list = cfg.manifests_dir / f"{query_id}.md5"
-            md5_list.write_text(
-                "".join(f"{e['md5']}  {e['path'].relative_to(dest_path)}\n" for e in present if e["md5"]),
-                encoding="utf-8",
-            )
+            lists: dict[str, str] = {}
+            for algo in ("md5", "sha1", "sha256"):
+                lines = [f"{e['checksum'].split(':', 1)[1]}  {e['path'].relative_to(dest_path)}\n"
+                         for e in with_cs if e["checksum"].startswith(algo + ":")]
+                if lines:
+                    path = cfg.manifests_dir / f"{query_id}.{algo}"
+                    path.write_text("".join(lines), encoding="utf-8")
+                    lists[algo] = str(path)
             res = render.resources_from(cfg, "transfer_job")
             out = render.write_script(
-                cfg, db, template="md5_verify.sh.j2", kind="verify", name=f"md5_{query_id}", group=query_id,
+                cfg, db, template="md5_verify.sh.j2", kind="verify", name=f"checksum_{query_id}", group=query_id,
                 runner=cfg["scheduler"], resources=res,
-                context={"dest": str(dest_path), "md5_list": str(md5_list),
-                         "report": str(cfg.state_dir / "logs" / f"{query_id}.md5.report")},
+                context={"dest": str(dest_path), "lists": lists,
+                         "report": str(cfg.state_dir / "logs" / f"{query_id}.checksum.report")},
                 meta={"source": query["source"], "access": query.get("access"), "dest": str(dest_path)},
-                query_id=query_id, inputs=[str(md5_list)],
+                query_id=query_id, inputs=list(lists.values()),
             )
             md5_job = out["script_path"]
 
@@ -412,9 +461,10 @@ def verify_download(
         "md5_mismatch": md5_bad[:50],
         "md5_checked_inline": md5_checked,
         "md5_job_script": md5_job,
+        "files_without_checksum": len(present) - len(with_cs),
         "partial_files": partial[:50],
-        "note": ("gdc-client와 pyega3는 다운로드 직후 자체 체크섬 검증을 수행합니다. "
-                 "여기서는 manifest 대비 파일 존재/크기를 확인하고, 요청 시 md5를 재검증합니다."),
+        "note": ("gdc-client, pyega3, fetchngs(FTP), URL 다운로드 스크립트는 받은 직후 체크섬을 검증합니다. "
+                 "여기서는 manifest 대비 파일 존재/크기를 확인하고, check_md5=True면 체크섬(md5/sha1/sha256)을 재검증합니다."),
         **extra,
     }
     db.save_verification(query_id, str(dest_path), status, report)

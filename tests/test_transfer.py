@@ -143,3 +143,26 @@ def test_controlled_dest_world_readable_warns(cfg, db):
     out = transfer.prepare_download(cfg, db, qid, acknowledge_controlled_access=True)
     assert any("다른 사용자에게 열려" in w for w in out["warnings"])
     assert read_tsv(db.get_query(qid)["manifest_path"])[0]["id"] == "uuid-1"
+
+
+def test_dbgap_download_requires_ack_and_ngc(tmp_path, monkeypatch):
+    ngc = tmp_path / "secrets" / "prj_123.ngc"
+    cfg = make_cfg(tmp_path, monkeypatch, dbgap_key_path=str(ngc))
+    db = StateDB(cfg)
+    qid = add_sra_query(cfg, db, [sra_run("SRR1", "SAMN1")])
+    with pytest.raises(transfer.ControlledAccessNotAcknowledged):
+        transfer.prepare_download(cfg, db, qid, use_dbgap=True)
+    with pytest.raises(FileNotFoundError):
+        transfer.prepare_download(cfg, db, qid, use_dbgap=True, acknowledge_controlled_access=True)
+    secure_dir(ngc.parent)
+    ngc.write_text("NGC-SECRET-CONTENT")
+    os.chmod(ngc, 0o600)
+    out = transfer.prepare_download(cfg, db, qid, use_dbgap=True, acknowledge_controlled_access=True)
+    params = yaml.safe_load((cfg.state_dir / "runs" / f"{qid}_fetchngs" / "params.yaml").read_text())
+    assert params["dbgap_key"] == str(ngc) and params["download_method"] == "sratools"
+    assert out["access"] == "controlled" and "umask 077" in out["script_text"]
+    params_text = (cfg.state_dir / "runs" / f"{qid}_fetchngs" / "params.yaml").read_text()
+    assert "NGC-SECRET-CONTENT" not in out["script_text"] + params_text  # 키는 경로로만 전달
+    gdc_q = add_gdc_query(cfg, db, GDC_FILES)
+    with pytest.raises(ValueError):
+        transfer.prepare_download(cfg, db, gdc_q, use_dbgap=True)

@@ -1,0 +1,51 @@
+{% extends "base.sh.j2" %}
+{% block body %}
+# URL manifest 다운로드: curl 재시도·이어받기, 크기 일치 시 건너뛰기, 체크섬 검증.
+# manifest: {{ manifest }}
+DEST={{ dest | q }}
+mkdir -p "$DEST"
+FAILED=0
+
+fetch() {  # fetch <url> <relative path> <size or ""> <algo:digest or "">
+  local url="$1" rel="$2" size="$3" checksum="$4"
+  local out="$DEST/$rel"
+  mkdir -p "$(dirname "$out")"
+  if [ -n "$size" ] && [ -f "$out" ] && [ "$(stat -c %s "$out")" = "$size" ]; then
+    echo "[skip] $rel"
+    return 0
+  fi
+  if [ -n "$size" ] && [ -f "$out.part" ] && [ "$(stat -c %s "$out.part")" = "$size" ]; then
+    mv -f "$out.part" "$out"
+  elif curl --fail --location --silent --show-error --retry 5 --retry-delay 10 \
+       --continue-at - --output "$out.part" "$url"; then
+    mv -f "$out.part" "$out"
+  else
+    echo "[FAIL] $rel <- $url"
+    FAILED=$((FAILED + 1))
+    return 0
+  fi
+  if [ -n "$checksum" ]; then
+    local algo="${checksum%%:*}" want="${checksum#*:}" got=""
+    case "$algo" in
+      md5) got=$(md5sum "$out" | cut -d' ' -f1) ;;
+      sha1) got=$(sha1sum "$out" | cut -d' ' -f1) ;;
+      sha256) got=$(sha256sum "$out" | cut -d' ' -f1) ;;
+    esac
+    if [ -n "$got" ] && [ "$got" != "$want" ]; then
+      echo "[CHECKSUM MISMATCH] $rel ($algo)"
+      FAILED=$((FAILED + 1))
+      return 0
+    fi
+  fi
+  echo "[ok] $rel"
+}
+
+{% for f in files %}
+fetch {{ f.url | q }} {{ f.rel | q }} {{ f.size | string | q }} {{ f.checksum | string | q }}
+{% endfor %}
+
+if [ "$FAILED" -ne 0 ]; then
+  echo "[dataops] $FAILED개 파일 실패. 같은 스크립트를 다시 제출하면 받은 파일은 건너뛰고 이어받습니다."
+  exit 1
+fi
+{% endblock %}
