@@ -1,0 +1,525 @@
+{
+  "started": "2026-10-30T11:20:02+0900",
+  "requests": {
+    "P1": "TCGA-BRCA의 WGS BAM 중 open access인 것 몇 개, 몇 TB인지 알려줘",
+    "P2": "GEO GSE137303의 count matrix(supplementary 파일) 받아줘",
+    "P3": "ENCODE ENCSR356KRQ(ATAC-seq)의 GRCh38 peak(bed) 파일 받아줘",
+    "P4": "SRA run SRR390278의 메타데이터(종, strategy, layout, read 수, FASTQ 크기)",
+    "P5": "Zenodo 레코드 3490058의 파일 받아줘"
+  },
+  "team": {
+    "P1": {
+      "query_s": 0.97,
+      "error": null,
+      "open": {
+        "n_files": 0,
+        "total_human": "0 B",
+        "n_cases": 0
+      },
+      "api_queries": [
+        {
+          "method": "POST",
+          "url": "https://api.gdc.cancer.gov/files",
+          "status": 200,
+          "json": {
+            "fields": "file_id,file_name,file_size,md5sum,state,access,data_category,data_type,data_format,experimental_strategy,analysis.workflow_type,cases.case_id,cases.submitter_id,cases.project.project_id,cases.samples.submitter_id,cases.samples.sample_type",
+            "format": "JSON",
+            "size": 1000,
+            "from": 0,
+            "filters": {
+              "op": "and",
+              "content": [
+                {
+                  "op": "in",
+                  "content": {
+                    "field": "cases.project.project_id",
+                    "value": [
+                      "TCGA-BRCA"
+                    ]
+                  }
+                },
+                {
+                  "op": "in",
+                  "content": {
+                    "field": "data_format",
+                    "value": [
+                      "BAM"
+                    ]
+                  }
+                },
+                {
+                  "op": "in",
+                  "content": {
+                    "field": "experimental_strategy",
+                    "value": [
+                      "WGS"
+                    ]
+                  }
+                },
+                {
+                  "op": "in",
+                  "content": {
+                    "field": "access",
+                    "value": [
+                      "open"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "all_access": {
+        "n_files": 2106,
+        "total_human": "536.67 TB",
+        "n_cases": 952,
+        "by_access": {
+          "controlled": 2106
+        }
+      }
+    },
+    "P2": {
+      "query_s": 2.59,
+      "error": null,
+      "discovery": {
+        "summary": {
+          "n_files": 2,
+          "n_files_with_size": 2,
+          "n_files_with_checksum": 0,
+          "total_bytes": 1346792,
+          "total_human": "1.35 MB",
+          "download": "url",
+          "accession": "GSE137303",
+          "title": "Effect on tomato plants of asymptomatic infection with southern tomato virus",
+          "gdstype": "Expression profiling by high throughput sequencing",
+          "taxon": "Solanum lycopersicum",
+          "n_samples": 6,
+          "suppfile_types": "TXT",
+          "bioproject": "PRJNA565137",
+          "sra_studies": [
+            "SRP221436"
+          ],
+          "pubmed_ids": [
+            "31620899"
+          ],
+          "release_date": "2019/09/13",
+          "checksums": "GEO는 체크섬을 제공하지 않아 크기로만 검증합니다."
+        },
+        "preview": [
+          {
+            "filename": "GSE137303_count.txt.gz",
+            "subdir": "suppl",
+            "size": 1344528,
+            "checksum": ""
+          },
+          {
+            "filename": "GSE137303_series_matrix.txt.gz",
+            "subdir": "matrix",
+            "size": 2264,
+            "checksum": ""
+          }
+        ],
+        "api_queries": [
+          {
+            "method": "GET",
+            "url": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi",
+            "status": 200,
+            "params": {
+              "tool": "genomics-dataops-team",
+              "db": "gds",
+              "term": "GSE137303[ACCN]",
+              "retmode": "json"
+            }
+          },
+          {
+            "method": "GET",
+            "url": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi",
+            "status": 200,
+            "params": {
+              "tool": "genomics-dataops-team",
+              "db": "gds",
+              "id": "200137303,100019694,304074984,304074983,304074982,304074981,304074980,304074979",
+              "retmode": "json"
+            }
+          },
+          {
+            "method": "GET",
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE137nnn/GSE137303/suppl/",
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE137nnn/GSE137303/matrix/",
+            "status": 200
+          },
+          {
+            "method": "HEAD",
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE137nnn/GSE137303/suppl/GSE137303_count.txt.gz",
+            "status": 200
+          },
+          {
+            "method": "HEAD",
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE137nnn/GSE137303/matrix/GSE137303_series_matrix.txt.gz",
+            "status": 200
+          }
+        ]
+      },
+      "download": {
+        "prepare_s": 0.02,
+        "review_s": 0.0,
+        "dry_run_would_run": "nohup bash <workdir>/state/scripts/geo-20261030-112009-3596da/download_20261030-112009.sh &",
+        "submit_s": 0.0,
+        "download_s": 16.0,
+        "job_status": {
+          "job_id": "job-e9ba5221",
+          "scheduler_job_id": "1589276",
+          "runner": "local",
+          "kind": "download",
+          "query_id": "geo-20261030-112009-3596da",
+          "status": "COMPLETED",
+          "submitted_at": "2026-10-30T11:20:09+09:00",
+          "script_path": "<workdir>/state/scripts/geo-20261030-112009-3596da/download_20261030-112009.sh",
+          "log_path": "<workdir>/state/logs/geo-20261030-112009-3596da_download_20261030-112009.log",
+          "log_tail": [
+            "[dataops] start 2026-10-30T11:20:09+09:00 on cpm-server1",
+            "[ok] suppl/GSE137303_count.txt.gz",
+            "[ok] matrix/GSE137303_series_matrix.txt.gz",
+            "[dataops] done 2026-10-30T11:20:24+09:00"
+          ]
+        },
+        "verify_s": 0.0,
+        "verify": {
+          "query_id": "geo-20261030-112009-3596da",
+          "dest": "<workdir>/data/geo/geo-20261030-112009-3596da",
+          "status": "PASS",
+          "expected_files": 2,
+          "found_files": 2,
+          "found_bytes": 1346792,
+          "found_human": "1.35 MB",
+          "missing": [],
+          "n_missing": 0,
+          "size_mismatch": [],
+          "size_warnings": [],
+          "md5_mismatch": [],
+          "md5_checked_inline": true,
+          "md5_job_script": null,
+          "files_without_checksum": 2,
+          "partial_files": [],
+          "note": "gdc-client, pyega3, fetchngs(FTP), URL 다운로드 스크립트는 받은 직후 체크섬을 검증합니다. 여기서는 manifest 대비 파일 존재/크기를 확인하고, check_md5=True면 체크섬(md5/sha1/sha256)을 재검증합니다."
+        }
+      }
+    },
+    "P3": {
+      "query_s": 1.03,
+      "error": null,
+      "discovery": {
+        "summary": {
+          "n_files": 12,
+          "n_files_with_size": 12,
+          "n_files_with_checksum": 12,
+          "total_bytes": 95869033,
+          "total_human": "95.87 MB",
+          "download": "url",
+          "n_experiments": 1,
+          "by_output_type": {
+            "IDR ranked peaks": 4,
+            "pseudoreplicated peaks": 3,
+            "IDR thresholded peaks": 3,
+            "conservative IDR thresholded peaks": 1,
+            "replicated peaks": 1
+          },
+          "by_file_format": {
+            "bed": 12
+          },
+          "by_assembly": {
+            "GRCh38": 12
+          },
+          "skipped_restricted_or_unavailable": 0
+        },
+        "preview": [
+          {
+            "filename": "ENCFF738HJE.bed.gz",
+            "subdir": "ENCSR356KRQ",
+            "size": 14153958,
+            "checksum": "md5:8af5f4624d47dc0f4ce5d5e1560ed729"
+          },
+          {
+            "filename": "ENCFF628TDX.bed.gz",
+            "subdir": "ENCSR356KRQ",
+            "size": 6151921,
+            "checksum": "md5:0d94e6e81c619f6930de5a41074df907"
+          },
+          {
+            "filename": "ENCFF551GBG.bed.gz",
+            "subdir": "ENCSR356KRQ",
+            "size": 6822823,
+            "checksum": "md5:c67e5c9269734cf3a4325b10b7e38746"
+          },
+          {
+            "filename": "ENCFF502MOD.bed.gz",
+            "subdir": "ENCSR356KRQ",
+            "size": 12919893,
+            "checksum": "md5:5f5f3f7096586448dfa217c881ab6d94"
+          },
+          {
+            "filename": "ENCFF792PNO.bed.gz",
+            "subdir": "ENCSR356KRQ",
+            "size": 4202332,
+            "checksum": "md5:5b04480a31fd031698e7505dac2d7ca5"
+          },
+          {
+            "filename": "ENCFF362TNX.bed.gz",
+            "subdir": "ENCSR356KRQ",
+            "size": 4210313,
+            "checksum": "md5:2880ada60dad05bc7b3e431b80debfd6"
+          },
+          {
+            "filename": "ENCFF070VDQ.bed.gz",
+            "subdir": "ENCSR356KRQ",
+            "size": 6226598,
+            "checksum": "md5:f9daeb3a4c8019fc8b3ae911035ecb9e"
+          },
+          {
+            "filename": "ENCFF317AVG.bed.gz",
+            "subdir": "ENCSR356KRQ",
+            "size": 3658977,
+            "checksum": "md5:5fc5c2558e7817a66af3a4801b50a00f"
+          }
+        ],
+        "api_queries": [
+          {
+            "method": "GET",
+            "url": "https://www.encodeproject.org/search/",
+            "status": 200,
+            "params": {
+              "type": "File",
+              "dataset": "/experiments/ENCSR356KRQ/",
+              "limit": "all",
+              "format": "json",
+              "field": [
+                "accession",
+                "file_format",
+                "file_type",
+                "output_type",
+                "assembly",
+                "file_size",
+                "md5sum",
+                "href",
+                "status",
+                "biological_replicates",
+                "restricted",
+                "no_file_available",
+                "dataset",
+                "preferred_default"
+              ],
+              "status": "released",
+              "assembly": "GRCh38",
+              "file_format": "bed"
+            }
+          }
+        ]
+      },
+      "download": {
+        "prepare_s": 0.0,
+        "review_s": 0.0,
+        "dry_run_would_run": "nohup bash <workdir>/state/scripts/encode-20261030-112026-1e0c42/download_20261030-112026.sh &",
+        "submit_s": 0.0,
+        "download_s": 181.03,
+        "job_status": {
+          "job_id": "job-b876b9d9",
+          "scheduler_job_id": "1589828",
+          "runner": "local",
+          "kind": "download",
+          "query_id": "encode-20261030-112026-1e0c42",
+          "status": "COMPLETED",
+          "submitted_at": "2026-10-30T11:20:26+09:00",
+          "script_path": "<workdir>/state/scripts/encode-20261030-112026-1e0c42/download_20261030-112026.sh",
+          "log_path": "<workdir>/state/logs/encode-20261030-112026-1e0c42_download_20261030-112026.log",
+          "log_tail": [
+            "[dataops] start 2026-10-30T11:20:26+09:00 on cpm-server1",
+            "[ok] ENCSR356KRQ/ENCFF738HJE.bed.gz",
+            "[ok] ENCSR356KRQ/ENCFF628TDX.bed.gz",
+            "[ok] ENCSR356KRQ/ENCFF551GBG.bed.gz",
+            "[ok] ENCSR356KRQ/ENCFF502MOD.bed.gz",
+            "[ok] ENCSR356KRQ/ENCFF792PNO.bed.gz",
+            "[ok] ENCSR356KRQ/ENCFF362TNX.bed.gz",
+            "[ok] ENCSR356KRQ/ENCFF070VDQ.bed.gz",
+            "[ok] ENCSR356KRQ/ENCFF317AVG.bed.gz",
+            "[ok] ENCSR356KRQ/ENCFF400RPH.bed.gz",
+            "[ok] ENCSR356KRQ/ENCFF740VKH.bed.gz",
+            "[ok] ENCSR356KRQ/ENCFF786VDD.bed.gz",
+            "[ok] ENCSR356KRQ/ENCFF368NUU.bed.gz",
+            "[dataops] done 2026-10-30T11:23:26+09:00"
+          ]
+        },
+        "verify_s": 0.27,
+        "verify": {
+          "query_id": "encode-20261030-112026-1e0c42",
+          "dest": "<workdir>/data/encode/encode-20261030-112026-1e0c42",
+          "status": "PASS",
+          "expected_files": 12,
+          "found_files": 12,
+          "found_bytes": 95869033,
+          "found_human": "95.87 MB",
+          "missing": [],
+          "n_missing": 0,
+          "size_mismatch": [],
+          "size_warnings": [],
+          "md5_mismatch": [],
+          "md5_checked_inline": true,
+          "md5_job_script": null,
+          "files_without_checksum": 0,
+          "partial_files": [],
+          "note": "gdc-client, pyega3, fetchngs(FTP), URL 다운로드 스크립트는 받은 직후 체크섬을 검증합니다. 여기서는 manifest 대비 파일 존재/크기를 확인하고, check_md5=True면 체크섬(md5/sha1/sha256)을 재검증합니다."
+        }
+      }
+    },
+    "P4": {
+      "query_s": 1.35,
+      "error": null,
+      "discovery": {
+        "summary": {
+          "n_runs": 1,
+          "n_experiments": 1,
+          "n_samples": 1,
+          "studies": [
+            "PRJNA131759"
+          ],
+          "by_library_strategy": {
+            "ChIP-Seq": 1
+          },
+          "by_library_layout": {
+            "SINGLE": 1
+          },
+          "by_library_source": {
+            "GENOMIC": 1
+          },
+          "by_instrument_model": {
+            "Illumina Genome Analyzer": 1
+          },
+          "by_scientific_name": {
+            "Drosophila melanogaster": 1
+          },
+          "total_reads": 17978113,
+          "total_bases": 791036972,
+          "total_bytes": 447468283,
+          "total_human": "447.47 MB",
+          "runs_without_fastq": 0,
+          "dbgap_protected_runs": 0,
+          "dbgap_studies": [],
+          "consent_groups": {},
+          "truncated": false
+        },
+        "preview": [
+          {
+            "run_accession": "SRR390278",
+            "sample_accession": "SAMN00765663",
+            "library_strategy": "ChIP-Seq",
+            "library_layout": "SINGLE",
+            "read_count": "17978113",
+            "scientific_name": "Drosophila melanogaster",
+            "sample_title": "Kc167_Sin3A_ChIPSeq_1 and 2"
+          }
+        ],
+        "api_queries": [
+          {
+            "method": "GET",
+            "url": "https://www.ebi.ac.uk/ena/portal/api/filereport",
+            "status": 200,
+            "params": {
+              "accession": "SRR390278",
+              "result": "read_run",
+              "fields": "run_accession,experiment_accession,sample_accession,secondary_sample_accession,study_accession,secondary_study_accession,library_layout,library_strategy,library_source,library_selection,instrument_platform,instrument_model,read_count,base_count,tax_id,scientific_name,sample_title,sample_alias,experiment_title,fastq_ftp,fastq_bytes,fastq_md5"
+            }
+          }
+        ]
+      }
+    },
+    "P5": {
+      "query_s": 0.86,
+      "error": null,
+      "discovery": {
+        "summary": {
+          "n_files": 1,
+          "n_files_with_size": 1,
+          "n_files_with_checksum": 1,
+          "total_bytes": 433244,
+          "total_human": "433.24 KB",
+          "download": "url",
+          "record_id": "3490058",
+          "requested_id": "3490058",
+          "resolved_to_latest_version": false,
+          "concept_record_id": "3490057",
+          "title": "Efficiently starting institutional research data management",
+          "doi": "10.5281/zenodo.3490058",
+          "version": "1.0",
+          "publication_date": "2019-10-15",
+          "license": "cc-by-4.0",
+          "resource_type": "poster"
+        },
+        "preview": [
+          {
+            "filename": "Poster-Efficiently-starting-institutional-RDM.pdf",
+            "subdir": "",
+            "size": 433244,
+            "checksum": "md5:a1399249c4b1368107959c5cc897ae2d"
+          }
+        ],
+        "api_queries": [
+          {
+            "method": "GET",
+            "url": "https://zenodo.org/api/records/3490058",
+            "status": 200
+          }
+        ]
+      },
+      "download": {
+        "prepare_s": 0.02,
+        "review_s": 0.0,
+        "dry_run_would_run": "nohup bash <workdir>/state/scripts/zenodo-20261030-112329-cee459/download_20261030-112329.sh &",
+        "submit_s": 0.03,
+        "download_s": 4.0,
+        "job_status": {
+          "job_id": "job-a579448d",
+          "scheduler_job_id": "1595198",
+          "runner": "local",
+          "kind": "download",
+          "query_id": "zenodo-20261030-112329-cee459",
+          "status": "COMPLETED",
+          "submitted_at": "2026-10-30T11:23:29+09:00",
+          "script_path": "<workdir>/state/scripts/zenodo-20261030-112329-cee459/download_20261030-112329.sh",
+          "log_path": "<workdir>/state/logs/zenodo-20261030-112329-cee459_download_20261030-112329.log",
+          "log_tail": [
+            "[dataops] start 2026-10-30T11:23:29+09:00 on cpm-server1",
+            "[ok] ***REDACTED***",
+            "[dataops] done 2026-10-30T11:23:32+09:00"
+          ]
+        },
+        "verify_s": 0.01,
+        "verify": {
+          "query_id": "zenodo-20261030-112329-cee459",
+          "dest": "<workdir>/data/zenodo/zenodo-20261030-112329-cee459",
+          "status": "PASS",
+          "expected_files": 1,
+          "found_files": 1,
+          "found_bytes": 433244,
+          "found_human": "433.24 KB",
+          "missing": [],
+          "n_missing": 0,
+          "size_mismatch": [],
+          "size_warnings": [],
+          "md5_mismatch": [],
+          "md5_checked_inline": true,
+          "md5_job_script": null,
+          "files_without_checksum": 0,
+          "partial_files": [],
+          "note": "gdc-client, pyega3, fetchngs(FTP), URL 다운로드 스크립트는 받은 직후 체크섬을 검증합니다. 여기서는 manifest 대비 파일 존재/크기를 확인하고, check_md5=True면 체크섬(md5/sha1/sha256)을 재검증합니다."
+        }
+      }
+    }
+  },
+  "finished": "2026-10-30T11:23:33+0900",
+  "workdir": "(temporary directory, removed after the run)",
+  "environment": "cpm-server1 (lab server with direct internet), local runner, no Slurm"
+}

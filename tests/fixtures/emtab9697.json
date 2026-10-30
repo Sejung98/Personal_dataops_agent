@@ -1,0 +1,438 @@
+{
+  "accno" : "E-MTAB-9697",
+  "attributes" : [ {
+    "name" : "Title",
+    "value" : "RRBP1 rewires Cisplatin resistance in Oral Squamous Cell Carcinoma by regulating YAP-1"
+  }, {
+    "name" : "ReleaseDate",
+    "value" : "2020-12-31"
+  }, {
+    "name" : "RootPath",
+    "value" : "E-MTAB-9697"
+  }, {
+    "name" : "AttachTo",
+    "value" : "ArrayExpress"
+  } ],
+  "section" : {
+    "accno" : "s-E-MTAB-9697",
+    "type" : "Study",
+    "attributes" : [ {
+      "name" : "Title",
+      "value" : "RRBP1 rewires Cisplatin resistance in Oral Squamous Cell Carcinoma by regulating YAP-1"
+    }, {
+      "name" : "Study type",
+      "value" : "Cell line - High-throughput sequencing"
+    }, {
+      "name" : "Study type",
+      "value" : "RNA-seq of coding RNA",
+      "valqual" : [ {
+        "name" : "Ontology",
+        "value" : "EFO"
+      }, {
+        "name" : "TermId",
+        "value" : "EFO_0003738"
+      } ]
+    }, {
+      "name" : "Organism",
+      "value" : "Homo sapiens"
+    }, {
+      "name" : "Description",
+      "value" : "The RNA-seq library preparation was performed on H357 CisS at 0 month,H357 CisR at 4 months, and H357 CisR at 8 months whereas CisR represent Cisplatin drug resistance and CisS denote sensitive to Cisplatin.  Additional, we also performed gene specific knockdown on H357CisR 8 months RRPB1 Sh. In experiment, We have added two independent biological replicates of each samples to understand the role of  causative factor for  cisplatin resistance at transcriptomic level. Total RNA isolated from above mentions experiment and  2 μg of  RNA was used to prepared library.  The mRNA was isolated through magnetic beads using mRNA isolation kit (PolyA mRNA isolation Module, NEB) followed by RNA-seq library preparation using mRNA library preparation kit (NEB) strictly following the vendor recommended protocol. After library preparation concentration of libraries was estimated using qubit 2.0 (Invitrogen) and the recommended fragmentation sizes were confirmed by Tapestation (Agilent)."
+    } ],
+    "links" : [ [ {
+      "url" : "ERP124622",
+      "attributes" : [ {
+        "name" : "Type",
+        "value" : "ENA"
+      } ]
+    } ] ],
+    "subsections" : [ [ {
+      "accno" : "P-MTAB-102273",
+      "type" : "Protocols",
+      "attributes" : [ {
+        "name" : "Name",
+        "value" : "P-MTAB-102273"
+      }, {
+        "name" : "Type",
+        "value" : "nucleic acid sequencing protocol",
+        "valqual" : [ {
+          "name" : "Ontology",
+          "value" : "EFO"
+        }, {
+          "name" : "TermId",
+          "value" : "EFO_0004170"
+        } ]
+      }, {
+        "name" : "Description",
+        "value" : "After library preparation concentration of libraries were estimated using Qubit 2.0 (Invitrogen) and the recommended fragmentation sizes were confirmed by Tapestation (Agilent) and sequenced using Illumina NextSeq 550."
+      }, {
+        "name" : "Hardware",
+        "value" : "NextSeq 550"
+      } ]
+    }, {
+      "accno" : "P-MTAB-102272",
+      "type" : "Protocols",
+      "attributes" : [ {
+        "name" : "Name",
+        "value" : "P-MTAB-102272"
+      }, {
+        "name" : "Type",
+        "value" : "nucleic acid library construction protocol",
+        "valqual" : [ {
+          "name" : "Ontology",
+          "value" : "EFO"
+        }, {
+          "name" : "TermId",
+          "value" : "EFO_0004184"
+        } ]
+      }, {
+        "name" : "Description",
+        "value" : "For RNA-seq library preparation 2 μg of total RNA was used to isolate mRNA through magnetic beads using mRNA isolation kit (PolyA mRNA isolation Module, NEB) followed by RNA-seq library preparation using mRNA library preparation kit (NEB) strictly following the vendor recommended protocol."
+      }, {
+        "name" : "Hardware"
+      } ]
+    }, {
+      "accno" : "P-MTAB-102271",
+      "type" : "Protocols",
+      "attributes" : [ {
+        "name" : "Name",
+        "value" : "P-MTAB-102271"
+      }, {
+        "name" : "Type",
+        "value" : "nucleic acid extraction protocol",
+        "valqual" : [ {
+          "name" : "Ontology",
+          "value" : "EFO"
+        }, {
+          "name" : "TermId",
+          "value" : "EFO_0002944"
+        } ]
+      }, {
+        "name" : "Description",
+        "value" : "The cells preserved in LBP lysis buffer were first taken out from -80°C and thawed by placing the plates/tubes on ice. Total RNA was isolated using NucleoSpin RNA Plus kit (Macherey-Nagel) according to manufacturer’s protocol. RNA concentration was estimated by Nanodrop (Thermo) and then 2ug of total RNA was used to prepare library."
+      }, {
+        "name" : "Hardware"
+      } ]
+    }, {
+      "accno" : "P-MTAB-102270",
+      "type" : "Protocols",
+      "attributes" : [ {
+        "name" : "Name",
+        "value" : "P-MTAB-102270"
+      }, {
+        "name" : "Type",
+        "value" : "sample collection protocol",
+        "valqual" : [ {
+          "name" : "Ontology",
+          "value" : "EFO"
+        }, {
+          "name" : "TermId",
+          "value" : "EFO_0005518"
+        } ]
+      }, {
+        "name" : "Description",
+        "value" : "The RNA-seq library preparation was performed for H357 CisR Nt Sh and H357 CisR CMTM6 shRNA treated with vehicle control (UT) and cisplatin (10 μM) (CisT) for 24 h."
+      }, {
+        "name" : "Hardware"
+      } ]
+    } ], {
+      "type" : "Author",
+      "attributes" : [ {
+        "name" : "Name",
+        "value" : "Rupesh Dash"
+      }, {
+        "name" : "Email",
+        "value" : "redacted@example.org"
+      }, {
+        "name" : "Role",
+        "value" : "submitter"
+      }, {
+        "name" : "affiliation",
+        "value" : "o1",
+        "reference" : true
+      } ]
+    }, {
+      "accno" : "o1",
+      "type" : "Organization",
+      "attributes" : [ {
+        "name" : "Name",
+        "value" : "Institute of Life Sciences, Bhubaneswar"
+      }, {
+        "name" : "Address",
+        "value" : "Nalco Nagar Road, Chandrasekharpur"
+      } ]
+    }, {
+      "accno" : "s-samples-factors-E-MTAB-9697",
+      "type" : "Samples",
+      "attributes" : [ {
+        "name" : "Sample count",
+        "value" : "8"
+      }, {
+        "name" : "Experimental Designs",
+        "value" : "case control design",
+        "valqual" : [ {
+          "name" : "TermId",
+          "value" : "EFO:0001427"
+        } ]
+      }, {
+        "name" : "Experimental Designs",
+        "value" : "compound treatment design",
+        "valqual" : [ {
+          "name" : "TermId",
+          "value" : "EFO_0001755"
+        } ]
+      }, {
+        "name" : "Experimental Factors",
+        "value" : "phenotype",
+        "valqual" : [ {
+          "name" : "TermName",
+          "value" : "phenotype"
+        } ]
+      }, {
+        "name" : "Experimental Factors",
+        "value" : "RNA interference",
+        "valqual" : [ {
+          "name" : "TermName",
+          "value" : "RNA interference"
+        } ]
+      }, {
+        "name" : "Experimental Factors",
+        "value" : "time",
+        "valqual" : [ {
+          "name" : "TermName",
+          "value" : "time"
+        } ]
+      } ],
+      "subsections" : [ {
+        "accno" : "exp_factor-E-MTAB-9697",
+        "type" : "Experimental Factors",
+        "attributes" : [ {
+          "name" : "Phenotype",
+          "value" : "resistant to cisplatin"
+        }, {
+          "name" : "Phenotype",
+          "value" : "sensitive to cisplatin"
+        }, {
+          "name" : "Rna interference",
+          "value" : "RRBP1 knockdown by siRNA"
+        }, {
+          "name" : "Rna interference",
+          "value" : "scrambled siRNA"
+        }, {
+          "name" : "Rna interference",
+          "value" : "none"
+        }, {
+          "name" : "Time",
+          "value" : "4 month"
+        }, {
+          "name" : "Time",
+          "value" : "8 month"
+        }, {
+          "name" : "Time",
+          "value" : "0 month"
+        } ],
+        "subsections" : [ [ {
+          "accno" : "factors_0",
+          "type" : "Factors Table",
+          "attributes" : [ {
+            "name" : "phenotype",
+            "value" : "sensitive to cisplatin"
+          }, {
+            "name" : "RNA interference",
+            "value" : "none"
+          }, {
+            "name" : "time",
+            "value" : "0 month"
+          }, {
+            "name" : "No. of Samples",
+            "value" : "2",
+            "valqual" : [ {
+              "name" : "url",
+              "value" : "https://www.ebi.ac.uk/ena/browser/view/ERS5229718-ERS5229719"
+            } ]
+          } ]
+        }, {
+          "accno" : "factors_1",
+          "type" : "Factors Table",
+          "attributes" : [ {
+            "name" : "phenotype",
+            "value" : "resistant to cisplatin"
+          }, {
+            "name" : "RNA interference",
+            "value" : "scrambled siRNA"
+          }, {
+            "name" : "time",
+            "value" : "4 month"
+          }, {
+            "name" : "No. of Samples",
+            "value" : "2",
+            "valqual" : [ {
+              "name" : "url",
+              "value" : "https://www.ebi.ac.uk/ena/browser/view/ERS5229720-ERS5229721"
+            } ]
+          } ]
+        }, {
+          "accno" : "factors_2",
+          "type" : "Factors Table",
+          "attributes" : [ {
+            "name" : "phenotype",
+            "value" : "resistant to cisplatin"
+          }, {
+            "name" : "RNA interference",
+            "value" : "scrambled siRNA"
+          }, {
+            "name" : "time",
+            "value" : "8 month"
+          }, {
+            "name" : "No. of Samples",
+            "value" : "2",
+            "valqual" : [ {
+              "name" : "url",
+              "value" : "https://www.ebi.ac.uk/ena/browser/view/ERS5229722-ERS5229723"
+            } ]
+          } ]
+        }, {
+          "accno" : "factors_3",
+          "type" : "Factors Table",
+          "attributes" : [ {
+            "name" : "phenotype",
+            "value" : "resistant to cisplatin"
+          }, {
+            "name" : "RNA interference",
+            "value" : "RRBP1 knockdown by siRNA"
+          }, {
+            "name" : "time",
+            "value" : "8 month"
+          }, {
+            "name" : "No. of Samples",
+            "value" : "2",
+            "valqual" : [ {
+              "name" : "url",
+              "value" : "https://www.ebi.ac.uk/ena/browser/view/ERS5229724-ERS5229725"
+            } ]
+          } ]
+        } ] ]
+      }, {
+        "accno" : "source_chars-E-MTAB-9697",
+        "type" : "Source Characteristics",
+        "attributes" : [ {
+          "name" : "Organism",
+          "value" : "Homo sapiens"
+        }, {
+          "name" : "Organism part",
+          "value" : "tongue"
+        }, {
+          "name" : "Cell line",
+          "value" : "H357"
+        }, {
+          "name" : "Disease",
+          "value" : "tongue squamous cell carcinoma"
+        }, {
+          "name" : "Genotype",
+          "value" : "wild type genotype"
+        }, {
+          "name" : "Phenotype",
+          "value" : "resistant to cisplatin"
+        }, {
+          "name" : "Phenotype",
+          "value" : "sensitive to cisplatin"
+        } ],
+        "subsections" : [ [ {
+          "accno" : "source_0",
+          "type" : "Characteristics Table",
+          "attributes" : [ {
+            "name" : "phenotype",
+            "value" : "sensitive to cisplatin"
+          }, {
+            "name" : "No. of Samples",
+            "value" : "2",
+            "valqual" : [ {
+              "name" : "url",
+              "value" : "https://www.ebi.ac.uk/ena/browser/view/ERS5229718-ERS5229719"
+            } ]
+          } ]
+        }, {
+          "accno" : "source_1",
+          "type" : "Characteristics Table",
+          "attributes" : [ {
+            "name" : "phenotype",
+            "value" : "resistant to cisplatin"
+          }, {
+            "name" : "No. of Samples",
+            "value" : "6",
+            "valqual" : [ {
+              "name" : "url",
+              "value" : "https://www.ebi.ac.uk/ena/browser/view/ERS5229720-ERS5229725"
+            } ]
+          } ]
+        } ] ]
+      } ]
+    }, {
+      "accno" : "s-assays-data-E-MTAB-9697",
+      "type" : "Assays and Data",
+      "attributes" : [ {
+        "name" : "Assay count",
+        "value" : "8"
+      }, {
+        "name" : "Technology",
+        "value" : "Sequencing assay"
+      }, {
+        "name" : "Assay by Molecule",
+        "value" : "RNA assay"
+      } ],
+      "subsections" : [ {
+        "accno" : "mt-E-MTAB-9697",
+        "type" : "MAGE-TAB Files",
+        "files" : [ [ {
+          "path" : "E-MTAB-9697.idf.txt",
+          "size" : 4329,
+          "attributes" : [ {
+            "name" : "Type",
+            "value" : "IDF File"
+          }, {
+            "name" : "Format",
+            "value" : "tab-delimited text"
+          }, {
+            "name" : "Description",
+            "value" : "Investigation Design Format (IDF)"
+          } ],
+          "type" : "file"
+        }, {
+          "path" : "E-MTAB-9697.sdrf.txt",
+          "size" : 11869,
+          "attributes" : [ {
+            "name" : "Type",
+            "value" : "SDRF File"
+          }, {
+            "name" : "Format",
+            "value" : "tab-delimited text"
+          }, {
+            "name" : "Description",
+            "value" : "Sample and Data Relationship Format (SDRF)"
+          } ],
+          "type" : "file"
+        } ] ]
+      } ]
+    }, {
+      "accno" : "score-E-MTAB-9697",
+      "type" : "MINSEQE Score",
+      "attributes" : [ {
+        "name" : "Exp. Design",
+        "value" : "*"
+      }, {
+        "name" : "Raw",
+        "value" : "*"
+      }, {
+        "name" : "Protocols",
+        "value" : "*"
+      }, {
+        "name" : "Processed",
+        "value" : "-"
+      }, {
+        "name" : "Variables",
+        "value" : "*"
+      } ]
+    } ]
+  },
+  "type" : "submission"
+}

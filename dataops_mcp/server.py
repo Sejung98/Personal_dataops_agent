@@ -16,7 +16,8 @@ except ImportError:  # mcp 1.x
     from mcp.server.fastmcp import FastMCP as _Server
 from mcp.types import ToolAnnotations
 
-from . import ega, gdc, processing, review, scheduler, sra, transfer
+from . import (biostudies, catalog, cbioportal, cellxgene, ega, encode, gdc, geo, pride, processing, review,
+               scheduler, sra, transfer, urlfiles, zenodo)
 from .config import load_config
 from .http import make_client
 from .security import check_secret_file
@@ -95,6 +96,13 @@ def check_environment() -> dict:
         }
 
     return _run(go)
+
+
+@tool(READ_ONLY)
+def list_databases() -> dict:
+    """지원 데이터베이스 카탈로그(도메인, 데이터 종류, 접근 수준, 담당 도구·subagent, 다운로드 방식)와
+    지원하지 않는 자원 및 이유. 수치는 없다(수치는 각 discovery 도구로만)."""
+    return _run(catalog.list_databases)
 
 
 # ---------------------------------------------------------------- discovery: GDC
@@ -207,6 +215,167 @@ def ega_search(accession: str, include_files: bool = True) -> dict:
     return _run(go)
 
 
+# ---------------------------------------------------------------- discovery: ENCODE / single-cell / cBioPortal
+@tool(READ_ONLY)
+def encode_search(
+    assay_title: StrOrList = None,
+    biosample: StrOrList = None,
+    target: StrOrList = None,
+    organism: StrOrList = None,
+    assembly: StrOrList = None,
+    search_term: Optional[str] = None,
+    limit: int = 500,
+) -> dict:
+    """ENCODE 실험 검색(released). 예: assay_title='ATAC-seq'|'TF ChIP-seq'|'Histone ChIP-seq'|'total RNA-seq',
+    biosample='K562', target='CTCF', organism='Homo sapiens', assembly='GRCh38'. 실험 목록 TSV와 분포를 반환."""
+
+    def go() -> dict:
+        cfg, db = _ctx()
+        with make_client(cfg) as client:
+            return encode.search(cfg, db, client, assay_title=assay_title, biosample=biosample, target=target,
+                                 organism=organism, assembly=assembly, search_term=search_term, limit=limit)
+
+    return _run(go)
+
+
+@tool(READ_ONLY)
+def encode_files(
+    experiments: Optional[list[str]] = None,
+    from_query_id: Optional[str] = None,
+    assembly: Optional[str] = None,
+    output_type: StrOrList = None,
+    file_format: StrOrList = None,
+    preferred_default_only: bool = False,
+) -> dict:
+    """ENCODE 실험(ENCSR...)들의 released 파일 목록·크기·md5를 manifest로 저장. encode_search의 query_id도 받는다.
+    예: assembly='GRCh38', output_type='conservative IDR thresholded peaks', file_format='bed'."""
+
+    def go() -> dict:
+        cfg, db = _ctx()
+        with make_client(cfg) as client:
+            return encode.files(cfg, db, client, experiments=experiments, from_query_id=from_query_id,
+                                assembly=assembly, output_type=output_type, file_format=file_format,
+                                preferred_default_only=preferred_default_only)
+
+    return _run(go)
+
+
+@tool(READ_ONLY)
+def cellxgene_search(
+    organism: StrOrList = None,
+    tissue: StrOrList = None,
+    disease: StrOrList = None,
+    assay: StrOrList = None,
+    text: Optional[str] = None,
+    collection_id: Optional[str] = None,
+    asset_types: Optional[list[str]] = None,
+) -> dict:
+    """CZ CELLxGENE Discover에서 단일세포 데이터셋 검색(라벨 부분일치, 대소문자 무시). 예: tissue='lung',
+    disease='COVID-19', assay='10x 3', organism='Homo sapiens'. 기본 asset은 H5AD."""
+
+    def go() -> dict:
+        cfg, db = _ctx()
+        with make_client(cfg) as client:
+            return cellxgene.search(cfg, db, client, organism=organism, tissue=tissue, disease=disease, assay=assay,
+                                    text=text, collection_id=collection_id, asset_types=asset_types)
+
+    return _run(go)
+
+
+@tool(READ_ONLY)
+def cbioportal_search(keyword: Optional[str] = None, study_ids: Optional[list[str]] = None) -> dict:
+    """cBioPortal study 검색(keyword: 이름·ID·암종 부분일치) 또는 study_ids 지정. study별 샘플 수·참조 게놈과
+    datahub tarball manifest를 반환."""
+
+    def go() -> dict:
+        cfg, db = _ctx()
+        with make_client(cfg) as client:
+            return cbioportal.search(cfg, db, client, keyword=keyword, study_ids=study_ids)
+
+    return _run(go)
+
+
+# ---------------------------------------------------------------- discovery: study files
+@tool(READ_ONLY)
+def geo_files(
+    accession: str,
+    include_matrix: bool = True,
+    include_samples: bool = False,
+    include: Optional[list[str]] = None,
+    exclude: Optional[list[str]] = None,
+) -> dict:
+    """GEO 처리 데이터(GSE/GSM)의 supplementary 파일과 series matrix 목록·크기를 조회해 manifest로 저장.
+    include/exclude는 파일명 glob(예: ['*.h5', '*counts*'], exclude=['*_RAW.tar']). 원시 read는 sra_search."""
+
+    def go() -> dict:
+        cfg, db = _ctx()
+        with make_client(cfg) as client:
+            return geo.files(cfg, db, client, accession=accession, include_matrix=include_matrix,
+                             include_samples=include_samples, include=include, exclude=exclude)
+
+    return _run(go)
+
+
+@tool(READ_ONLY)
+def arrayexpress_files(
+    accession: str, include: Optional[list[str]] = None, exclude: Optional[list[str]] = None
+) -> dict:
+    """ArrayExpress(E-MTAB-, E-GEOD- 등; EBI BioStudies)의 처리 데이터·MAGE-TAB 파일 목록·크기를 manifest로 저장.
+    연결된 ENA study(원시 read)도 알려준다."""
+
+    def go() -> dict:
+        cfg, db = _ctx()
+        with make_client(cfg) as client:
+            return biostudies.files(cfg, db, client, accession=accession, include=include, exclude=exclude)
+
+    return _run(go)
+
+
+@tool(READ_ONLY)
+def pride_files(
+    accession: str,
+    categories: Optional[list[str]] = None,
+    include: Optional[list[str]] = None,
+    exclude: Optional[list[str]] = None,
+) -> dict:
+    """PRIDE 프로테오믹스 프로젝트(PXD)의 파일 목록·크기·MD5를 manifest로 저장.
+    categories로 RAW, SEARCH, RESULT, PEAK, OTHER 등을 고를 수 있다."""
+
+    def go() -> dict:
+        cfg, db = _ctx()
+        with make_client(cfg) as client:
+            return pride.files(cfg, db, client, accession=accession, categories=categories, include=include,
+                               exclude=exclude)
+
+    return _run(go)
+
+
+@tool(READ_ONLY)
+def zenodo_files(record: str, include: Optional[list[str]] = None, exclude: Optional[list[str]] = None) -> dict:
+    """Zenodo 레코드(번호, 10.5281/zenodo.N DOI 또는 URL)의 파일 목록·크기·MD5를 manifest로 저장.
+    concept DOI는 최신 버전으로 해석된다."""
+
+    def go() -> dict:
+        cfg, db = _ctx()
+        with make_client(cfg) as client:
+            return zenodo.files(cfg, db, client, record=record, include=include, exclude=exclude)
+
+    return _run(go)
+
+
+@tool(READ_ONLY)
+def url_inspect(urls: list[str], subdir: str = "") -> dict:
+    """카탈로그에 없는 공개 파일(예: Ensembl/GENCODE 레퍼런스, gnomAD, 1000 Genomes)의 HTTPS URL을 HEAD로
+    확인(존재·크기)하고 다운로드 manifest로 저장한다."""
+
+    def go() -> dict:
+        cfg, db = _ctx()
+        with make_client(cfg) as client:
+            return urlfiles.inspect_urls(cfg, db, client, urls, subdir=subdir)
+
+    return _run(go)
+
+
 @tool(READ_ONLY)
 def get_query(query_id: str) -> dict:
     """저장된 discovery 결과(요약, 파라미터, 근거 API 호출, manifest 경로)를 query_id로 조회."""
@@ -240,16 +409,19 @@ def prepare_download(
     acknowledge_controlled_access: bool = False,
     nf_core_pipeline: Optional[str] = "rnaseq",
     download_method: Optional[str] = None,
+    use_dbgap: bool = False,
 ) -> dict:
     """query_id의 다운로드 job 스크립트를 생성한다(실행하지 않음). GDC=gdc-client, SRA/ENA/GEO=nf-core/fetchngs,
     EGA=pyega3. controlled 데이터는 사용자 확인 후 acknowledge_controlled_access=True가 필요하다.
-    nf_core_pipeline/download_method는 fetchngs 옵션(download_method: ftp|sratools|aspera|fastq-dl)."""
+    nf_core_pipeline/download_method는 fetchngs 옵션(download_method: ftp|sratools|aspera|fastq-dl).
+    use_dbgap=True: dbGaP 보호 SRA run을 config.dbgap_key_path(.ngc)로 받는다(controlled, 확인 필요)."""
 
     def go() -> dict:
         cfg, db = _ctx()
         return transfer.prepare_download(cfg, db, query_id, dest=dest,
                                          acknowledge_controlled_access=acknowledge_controlled_access,
-                                         nf_core_pipeline=nf_core_pipeline, download_method=download_method)
+                                         nf_core_pipeline=nf_core_pipeline, download_method=download_method,
+                                         use_dbgap=use_dbgap)
 
     return _run(go)
 

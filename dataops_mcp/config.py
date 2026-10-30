@@ -39,6 +39,7 @@ DEFAULTS: dict[str, Any] = {
     "disk_headroom": 1.5,
     "gdc_token_path": "~/.gdc/gdc-user-token.txt",
     "ega_credentials_path": "~/.ega/credentials.json",
+    "dbgap_key_path": "",
     "module_loads": [],
     "tools": {
         "gdc_client": "gdc-client",
@@ -87,6 +88,7 @@ _PATH_KEYS = (
     "singularity_cache",
     "gdc_token_path",
     "ega_credentials_path",
+    "dbgap_key_path",
     "nextflow_extra_config",
 )
 

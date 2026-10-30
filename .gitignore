@@ -4,6 +4,7 @@ config.yaml
 *token*.txt
 *credential*.json
 credentials.json
+*.ngc
 .gdc/
 .ega/
 

@@ -29,6 +29,7 @@ singularity_cache: ./singularity_cache   # [채우기] 컨테이너 이미지 �
 # 두 파일 모두 chmod 600 으로 두세요. 도구는 파일 내용을 읽지 않고 경로만 전달합니다.
 gdc_token_path: ~/.gdc/gdc-user-token.txt        # GDC Data Portal에서 받은 토큰 (controlled 데이터용)
 ega_credentials_path: ~/.ega/credentials.json    # {"username": "...", "password": "..."}
+dbgap_key_path: ""                               # dbGaP 보호 SRA run용 repository key (.ngc), 필요할 때만
 
 # ---------------------------------------------------------------- 자원/한도
 max_concurrent_jobs: 4      # 동시에 실행할 job 수 상한 (Nextflow executor.queueSize에도 사용)

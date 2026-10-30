@@ -65,7 +65,7 @@ def db(cfg):
 
 @pytest.fixture
 def client():
-    with httpx.Client() as c:
+    with httpx.Client(follow_redirects=True) as c:  # 운영 클라이언트(make_client)와 같게
         yield c
 
 
