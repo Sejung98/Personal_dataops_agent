@@ -54,6 +54,7 @@ def request(
     *,
     params: dict | None = None,
     json: Any = None,
+    headers: dict | None = None,
     retries: int = 3,
     sleep: Callable[[float], None] = time.sleep,
     ok_status: tuple[int, ...] = (200,),
@@ -62,7 +63,7 @@ def request(
     last_exc: Exception | None = None
     for attempt in range(retries + 1):
         try:
-            resp = client.request(method, url, params=params, json=json)
+            resp = client.request(method, url, params=params, json=json, headers=headers)
         except httpx.TransportError as exc:
             last_exc = exc
             log.add(method, url, params, json, None)

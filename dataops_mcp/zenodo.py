@@ -49,12 +49,9 @@ def files(
     rid = record_id(record)
     log = http.ApiLog()
     retries = int(cfg.get("http", {}).get("retries", 3))
-    # concept id는 최신 버전으로 redirect된다
-    resp = client.get(f"{ZENODO_API}/{rid}", headers={"Accept": "application/json"}, follow_redirects=True)
-    log.add("GET", f"{ZENODO_API}/{rid}", None, None, resp.status_code)
-    if resp.status_code != 200:
-        resp = http.request(client, log, "GET", f"{ZENODO_API}/{rid}", retries=retries)
-    rec = resp.json()
+    # concept id는 최신 버전으로 redirect된다(클라이언트가 redirect를 따라감)
+    rec = http.request(client, log, "GET", f"{ZENODO_API}/{rid}", headers={"Accept": "application/json"},
+                       retries=retries).json()
     meta = rec.get("metadata") or {}
     rows = []
     for f in rec.get("files") or []:
