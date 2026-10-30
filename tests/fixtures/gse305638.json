@@ -1,0 +1,115 @@
+{
+  "header": {
+    "type": "esummary",
+    "version": "0.3"
+  },
+  "result": {
+    "200305638": {
+      "accession": "GSE305638",
+      "bioproject": "PRJNA1307399",
+      "entrytype": "GSE",
+      "extrelations": [],
+      "ftplink": "ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE305nnn/GSE305638/",
+      "gds": "",
+      "gdstype": "Expression profiling by high throughput sequencing",
+      "geo2r": "no",
+      "gpl": "30173",
+      "gse": "305638",
+      "n_samples": 18,
+      "pdat": "2025/08/21",
+      "platformtaxa": "",
+      "platformtitle": "",
+      "projects": [],
+      "ptechtype": "",
+      "pubmedids": [],
+      "relations": [],
+      "samples": [
+        {
+          "accession": "GSM9181268",
+          "title": "Cardiomyocytes, FA3, Disease, 3"
+        },
+        {
+          "accession": "GSM9181265",
+          "title": "Cardiomyocytes, FA2ic, Healthy, 3"
+        },
+        {
+          "accession": "GSM9181271",
+          "title": "Cardiomyocytes, FA3ic, Healthy, 3"
+        },
+        {
+          "accession": "GSM9181262",
+          "title": "Cardiomyocytes, FA2, Disease, 3"
+        },
+        {
+          "accession": "GSM9181259",
+          "title": "Cardiomyocytes, FA1ic, Healthy, 3"
+        },
+        {
+          "accession": "GSM9181260",
+          "title": "Cardiomyocytes, FA2, Disease, 1"
+        },
+        {
+          "accession": "GSM9181266",
+          "title": "Cardiomyocytes, FA3, Disease, 1"
+        },
+        {
+          "accession": "GSM9181263",
+          "title": "Cardiomyocytes, FA2ic, Healthy, 1"
+        },
+        {
+          "accession": "GSM9181257",
+          "title": "Cardiomyocytes, FA1ic, Healthy, 1"
+        },
+        {
+          "accession": "GSM9181254",
+          "title": "Cardiomyocytes, FA1, Disease, 1"
+        },
+        {
+          "accession": "GSM9181261",
+          "title": "Cardiomyocytes, FA2, Disease, 2"
+        },
+        {
+          "accession": "GSM9181258",
+          "title": "Cardiomyocytes, FA1ic, Healthy, 2"
+        },
+        {
+          "accession": "GSM9181255",
+          "title": "Cardiomyocytes, FA1, Disease, 2"
+        },
+        {
+          "accession": "GSM9181269",
+          "title": "Cardiomyocytes, FA3ic, Healthy, 1"
+        },
+        {
+          "accession": "GSM9181256",
+          "title": "Cardiomyocytes, FA1, Disease, 3"
+        },
+        {
+          "accession": "GSM9181264",
+          "title": "Cardiomyocytes, FA2ic, Healthy, 2"
+        },
+        {
+          "accession": "GSM9181270",
+          "title": "Cardiomyocytes, FA3ic, Healthy, 2"
+        },
+        {
+          "accession": "GSM9181267",
+          "title": "Cardiomyocytes, FA3, Disease, 2"
+        }
+      ],
+      "samplestaxa": "",
+      "seriestitle": "",
+      "ssinfo": "",
+      "subsetinfo": "",
+      "summary": "Friedreich ataxia (FRDA) is a progressive neuromuscular degenerative disorder caused by GAA repeat expansions in the FXN gene, leading to frataxin deficiency and multisystem pathology. Cardiomyopathy is the leading cause of mortality in FRDA patients. To investigate the cellular and molecular mechanisms underlying FRDA-associated cardiac dysfunction, we employed induced pluripotent stem cell (iPSC) lines derived from three FRDA patients, each paired with an isogenic control line generated through CRISPR/Cas9-mediated excision of the pathogenic GAA repeat expansion. Correction of the mutation restored FXN expression to levels comparable to healthy donor iPSCs, and all lines differentiated efficiently into cardiomyocytes. Functional analysis revealed significant contractile abnormalities in FRDA cardiomyocytes and multicellular cardiac microtissues, including prolonged contraction and relaxation times and faster beating rates, consistent with clinical observations of cardiac contractile dysfunction. FRDA cardiomyocytes also exhibited pathological features such as increased cell size, irregular calcium transients, elevated mitochondrial reactive oxygen species levels, increased mitochondrial fission and increased cell death. These phenotypes were exacerbated by pathological levels of iron supplementation in culture media, highlighting the heightened sensitivity of frataxin-deficient cardiomyocytes to iron-induced metabolic stress. RNA sequencing revealed a distinct transcriptional profile associated with frataxin deficiency. MEG3 and PCDHGA10 were consistently dysregulated across all three FRDA-iPSC lines and may represent early molecular markers of FRDA cardiomyopathy. Together, these findings establish a robust human iPSC model of FRDA cardiomyopathy that captures early disease phenotypes and reveals novel molecular targets. This preclinical human model provides valuable insight into the pathogenesis of FRDA and provides a platform for developing early-stage therapeutic interventions.",
+      "suppfile": "TSV",
+      "taxon": "Homo sapiens",
+      "title": "Frataxin deficiency drives cardiac dysfunction and transcriptional dysregulation in Friedreich ataxia iPSC model",
+      "uid": "200305638",
+      "valtype": ""
+    },
+    "uids": [
+      "200305638"
+    ]
+  }
+}

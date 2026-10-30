@@ -115,3 +115,18 @@ def test_ega_pagination_stops_when_api_ignores_offset(cfg, db, client):
 def test_ega_rejects_bad_accession(cfg, db, client):
     with pytest.raises(ValueError):
         ega.search(cfg, db, client, accession="EGAX123")
+
+
+@respx.mock
+def test_sra_search_flags_dbgap_protected_runs(cfg, db, client):
+    respx.get(sra.ENA_FILEREPORT).mock(return_value=httpx.Response(204))
+    respx.get(f"{sra.EUTILS}/esearch.fcgi").mock(
+        return_value=httpx.Response(200, json={"esearchresult": {"idlist": ["1", "2"]}}))
+    respx.get(f"{sra.EUTILS}/efetch.fcgi").mock(return_value=httpx.Response(200, text=(
+        "Run,Experiment,LibraryLayout,LibraryStrategy,ScientificName,spots,bases,dbgap_study_accession,Consent\n"
+        "SRR27651451,SRX1,PAIRED,RNA-Seq,Homo sapiens,10,1000,phs002857,GRU\n"
+        "SRR2,SRX2,PAIRED,RNA-Seq,Homo sapiens,10,1000,,public\n")))
+    out = sra.search(cfg, db, client, accession="SRP999")
+    s = out["summary"]
+    assert s["dbgap_protected_runs"] == 1 and s["dbgap_studies"] == ["phs002857"]
+    assert out["access"] == "controlled" and "use_dbgap=True" in out["dbgap"]

@@ -142,3 +142,20 @@ def inspect_urls(cfg: Config, db: StateDB, client: httpx.Client, urls: list[str]
     if problems:
         out["unreachable"] = problems
     return out
+
+
+def filter_rows(rows: list[dict[str, Any]], include: list[str] | None, exclude: list[str] | None) -> list[dict[str, Any]]:
+    """파일명/하위경로에 대한 glob 패턴(대소문자 무시) 필터. include가 있으면 하나라도 맞아야 한다."""
+    from fnmatch import fnmatch
+
+    def matches(row: dict[str, Any], patterns: list[str]) -> bool:
+        rel = "/".join(x for x in (row.get("subdir"), row.get("filename")) if x).lower()
+        name = str(row.get("filename", "")).lower()
+        return any(fnmatch(name, p.lower()) or fnmatch(rel, p.lower()) for p in patterns)
+
+    out = rows
+    if include:
+        out = [r for r in out if matches(r, include)]
+    if exclude:
+        out = [r for r in out if not matches(r, exclude)]
+    return out

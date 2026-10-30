@@ -189,6 +189,9 @@ def _from_ncbi_row(r: dict[str, str]) -> dict[str, str]:
         "fastq_bytes": "",
         "fastq_md5": "",
         "metadata_source": "ncbi_runinfo",
+        # dbGaP 보호 run 표시: Consent가 'public'이 아니거나 dbgap_study_accession이 있음
+        "consent": r.get("Consent", ""),
+        "dbgap_study_accession": r.get("dbgap_study_accession", ""),
     }
 
 
@@ -201,6 +204,11 @@ def _int(v: Any) -> int:
 
 def fastq_bytes(row: dict[str, str]) -> int:
     return sum(_int(x) for x in (row.get("fastq_bytes") or "").split(";") if x)
+
+
+def is_protected(row: dict[str, str]) -> bool:
+    consent = (row.get("consent") or "").strip().lower()
+    return bool(row.get("dbgap_study_accession")) or (consent not in ("", "public"))
 
 
 def search(
@@ -260,8 +268,9 @@ def search(
     runinfo_path = None
     if selected:
         runinfo_path = write_tsv(cfg.manifests_dir / f"{query_id}.runinfo.tsv", selected,
-                                 ENA_FIELDS + ["metadata_source"])
+                                 ENA_FIELDS + ["metadata_source", "consent", "dbgap_study_accession"])
     total_fastq = sum(fastq_bytes(r) for r in selected)
+    protected = [r for r in selected if is_protected(r)]
     no_fastq = [r["run_accession"] for r in selected if not r.get("fastq_ftp")]
     summary = {
         "n_runs": len(selected),
@@ -278,14 +287,18 @@ def search(
         "total_bytes": total_fastq,
         "total_human": fmt_bytes(total_fastq),
         "runs_without_fastq": len(no_fastq),
+        "dbgap_protected_runs": len(protected),
+        "dbgap_studies": sorted({r.get("dbgap_study_accession") for r in protected if r.get("dbgap_study_accession")}),
+        "consent_groups": counts(r.get("consent") for r in protected),
         "truncated": truncated,
     }
+    access = "controlled" if protected else "open"
     params = {"accessions": accessions, "library_strategy": library_strategy}
-    db.save_query(query_id, "sra", params, log.calls, summary, str(runinfo_path) if runinfo_path else None, "open")
+    db.save_query(query_id, "sra", params, log.calls, summary, str(runinfo_path) if runinfo_path else None, access)
     result: dict[str, Any] = {
         "query_id": query_id,
         "summary": summary,
-        "access": "open",
+        "access": access,
         "runinfo_path": str(runinfo_path) if runinfo_path else None,
         "preview": [
             {k: r.get(k) for k in ("run_accession", "sample_accession", "library_strategy", "library_layout",
@@ -295,6 +308,11 @@ def search(
         "notes": notes,
         "api_queries": log.calls,
     }
+    if protected:
+        result["dbgap"] = (
+            f"{len(protected)}개 run이 dbGaP 보호 데이터입니다({', '.join(summary['dbgap_studies']) or 'study 미상'}). "
+            "해당 study의 dbGaP 승인과 repository key(.ngc)가 있어야 하며, prepare_download(use_dbgap=True)로 받습니다."
+        )
     if no_fastq:
         result["warning"] = (
             f"{len(no_fastq)}개 run에 ENA FASTQ URL이 없습니다(예: {', '.join(no_fastq[:5])}). "

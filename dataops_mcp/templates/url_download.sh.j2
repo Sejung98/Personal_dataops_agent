@@ -24,6 +24,13 @@ fetch() {  # fetch <url> <relative path> <size or ""> <algo:digest or "">
     FAILED=$((FAILED + 1))
     return 0
   fi
+  # 일부 미러는 잘린 파일이나 디렉토리 목록 HTML을 200으로 돌려준다: 크기를 반드시 대조한다.
+  if [ -n "$size" ] && [ "$(stat -c %s "$out")" != "$size" ]; then
+    echo "[SIZE MISMATCH] $rel (expected $size, got $(stat -c %s "$out"))"
+    rm -f "$out"  # 이어받기하면 잘못된 내용 뒤에 붙으므로 처음부터 다시 받게 지운다
+    FAILED=$((FAILED + 1))
+    return 0
+  fi
   if [ -n "$checksum" ]; then
     local algo="${checksum%%:*}" want="${checksum#*:}" got=""
     case "$algo" in

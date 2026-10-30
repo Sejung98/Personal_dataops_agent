@@ -84,6 +84,7 @@ check_tool() {
   fi
 }
 say "외부 도구 점검 (자동 설치하지 않음)"
+check_tool curl        "URL manifest 다운로드(GEO·ArrayExpress·ENCODE·CELLxGENE·cBioPortal·PRIDE·Zenodo)에 필요"
 check_tool claude      "Claude Code 설치: https://code.claude.com/docs (npm install -g @anthropic-ai/claude-code 등)"
 check_tool gdc-client  "GDC Data Transfer Tool: https://gdc.cancer.gov/access-data/gdc-data-transfer-tool 에서 바이너리를 받아 PATH에 두거나 config.yaml tools.gdc_client에 경로 지정"
 check_tool nextflow    "Nextflow >= 25.10.4 필요: curl -s https://get.nextflow.io | bash (Java 17+ 필요) 또는 module load nextflow"
