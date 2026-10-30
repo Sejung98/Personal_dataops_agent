@@ -1,0 +1,9 @@
+{% extends "base.sh.j2" %}
+{% block body %}
+# 대용량 md5 검증은 MCP 도구 안에서 하지 않고 job으로 실행한다.
+cd {{ dest | q }}
+md5sum -c {{ md5_list | q }} > {{ report | q }} 2>&1 || {
+  echo "[dataops] md5 불일치 또는 누락 파일이 있습니다: {{ report }}"
+  exit 1
+}
+{% endblock %}

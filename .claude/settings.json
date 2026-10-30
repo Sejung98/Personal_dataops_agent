@@ -1,0 +1,39 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__dataops__check_environment",
+      "mcp__dataops__gdc_search_files",
+      "mcp__dataops__gdc_search_cases",
+      "mcp__dataops__gdc_get_field_values",
+      "mcp__dataops__sra_search",
+      "mcp__dataops__ega_search",
+      "mcp__dataops__get_query",
+      "mcp__dataops__list_queries",
+      "mcp__dataops__prepare_download",
+      "mcp__dataops__verify_download",
+      "mcp__dataops__build_samplesheet",
+      "mcp__dataops__prepare_pipeline",
+      "mcp__dataops__preflight_check",
+      "mcp__dataops__record_review",
+      "mcp__dataops__job_status",
+      "mcp__dataops__list_jobs"
+    ],
+    "ask": [
+      "mcp__dataops__submit_job"
+    ],
+    "deny": [
+      "Bash(sbatch *)",
+      "Bash(qsub *)",
+      "Bash(srun *)",
+      "Bash(salloc *)",
+      "Bash(nextflow run *)",
+      "Bash(gdc-client *)",
+      "Bash(pyega3 *)",
+      "Read(~/.gdc/**)",
+      "Read(~/.ega/**)",
+      "Read(**/*token*.txt)",
+      "Read(**/*credential*.json)"
+    ]
+  },
+  "enabledMcpjsonServers": ["dataops"]
+}

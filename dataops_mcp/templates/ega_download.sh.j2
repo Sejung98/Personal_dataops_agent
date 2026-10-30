@@ -1,0 +1,11 @@
+{% extends "base.sh.j2" %}
+{% block body %}
+# pyEGA3: 크리덴셜은 JSON 파일 경로(-cf)로만 전달한다. 다운로드 후 체크섬을 자체 검증한다.
+DEST={{ dest | q }}
+mkdir -p "$DEST"
+# pyega3는 현재 디렉토리에 pyega3_output.log를 남긴다.
+cd {{ log_dir | q }}
+{% for acc in accessions %}
+{{ pyega3 | q }} -c {{ connections }} -cf {{ credentials_path | q }} fetch {{ acc | q }} --output-dir "$DEST"
+{% endfor %}
+{% endblock %}

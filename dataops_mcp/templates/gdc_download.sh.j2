@@ -1,0 +1,16 @@
+{% extends "base.sh.j2" %}
+{% block body %}
+# GDC Data Transfer Tool: 다운로드 후 파일 md5를 기본으로 검증한다(--no-file-md5sum을 쓰지 않음).
+# 결과 구조: <DEST>/<file UUID>/<file name>
+DEST={{ dest | q }}
+MANIFEST={{ manifest | q }}
+mkdir -p "$DEST"
+{{ gdc_client | q }} download \
+  --manifest "$MANIFEST" \
+  --dir "$DEST" \
+  --n-processes {{ n_processes }} \
+  --retry-amount {{ retry_amount }} \
+  --log-file {{ client_log | q }}{% if token_path %} \
+  --token-file {{ token_path | q }}{% endif %}
+
+{% endblock %}

@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "dataops": {
+      "type": "stdio",
+      "command": "${CLAUDE_PROJECT_DIR:-.}/.venv/bin/python",
+      "args": ["-m", "dataops_mcp.server"],
+      "env": {},
+      "alwaysLoad": true
+    }
+  }
+}
